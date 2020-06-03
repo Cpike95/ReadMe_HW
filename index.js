@@ -90,9 +90,7 @@ ${data.questions}
 * Link to Github: ${githubLink}
     `
     ;
-    console.log(github);
 
-    console.log(answrs);    
     fs.writeFile("README.md", answrs, function(err) {
         if (err) {
           throw err;
