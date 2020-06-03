@@ -2,112 +2,107 @@ const inquirer = require("inquirer");
 const fs = require("fs");
 const axios = require("axios");
 
-inquirer.prompt([
+getData();
 
-    {
-        type: "input",
-        message: "Project title:",
-        name: "title"
-    },
-    {
-        type: "input",
-        message: "Provide a short description of the project:",
-        name: "description"
-    },
-    {
-        type: "input",
-        message: "Table of Contents:",
-        name: "tableofContents"
-    },
-    {
-        type: "input",
-        message: "Installation directions:",
-        name: "instalation"
-    },
-    {
-        type: "list",
-        message: "Select a Liscence:",
-        name: "liscence",
-        choices: ['hey', 'bud']
-    },
-    {
-        type: "input",
-        message: "Usage:",
-        name: "usage"
-    },
-    {
-        type: "input",
-        message: "Contributing:",
-        name: "contributing"
-    },
-    {
-        type: "input",
-        message: "Tests: ",
-        name: "tests"
-    },
-    {
-        type: "input",
-        message: "Questions:",
-        name: "questions"
-    },  
-    {
-        type: "input",
-        message: "Enter your GitHub username:",
-        name: "username"
-    },
-// title, description, tableofContents, instalation, liscence, usage, contributing, tests, questions
-    ])
-  .then(function writeToFile(data) {
- // making variables for the users reponses from the cmnd line.
-    const answrs = `
+async function getData() {
+   try {
+     await inquirer.prompt([
+        {
+            type: "input",
+            message: "Project title:",
+            name: "title"
+        },
+        {
+            type: "input",
+            message: "Provide a short description of the project:",
+            name: "description"
+        },
+        {
+            type: "input",
+            message: "Table of Contents:",
+            name: "tableofContents"
+        },
+        {
+            type: "input",
+            message: "Installation directions:",
+            name: "instalation"
+        },
+
+        {
+            type: "input",
+            message: "Usage:",
+            name: "usage"
+        },
+        {
+            type: "input",
+            message: "Contributing:",
+            name: "contributing"
+        },
+        {
+            type: "input",
+            message: "Tests: ",
+            name: "tests"
+        },
+        {
+            type: "input",
+            message: "Questions:",
+            name: "questions"
+        },  
+        {
+            type: "input",
+            message: "Enter your GitHub username:",
+            name: "username"
+        },    
+
+        ]).then(async function (data) {
+   
+    // using axios to take into the github users accountgrabing the name, url
+    const github =  await axios.get(
+        `https://api.github.com/users/${data.username}`,
+    );
+    const githubLink = github.data.url;
+    const githubEmail = github.data.email; 
+// making the README file with the users reponses from the cmnd line.
+
+    const answrs = 
+    `
 # ${data.title}
 ## Desctipion
 ${data.description}
 ## Table of Contents
 * ${data.tableofContents}
-## Istalation
+## Instalation
 ${data.instalation}  
 ## Usage 
 ${data.usage}   
-## Liscence
-${data.liscence}
+
 ## Tests
 ${data.tests}
 ## Conributions
 ${data.contributing}
 ## Quesitons
 ${data.questions}
-        `
-    ;
 
-     
-    console.log(answrs);
-        // const inputs = answrs.join("\n");
-    
+* Github user name: ${data.username}
+
+* Email me at : ${githubEmail}
+
+* Link to Github: ${githubLink}
+    `
+    ;
+    console.log(github);
+
+    console.log(answrs);    
     fs.writeFile("README.md", answrs, function(err) {
         if (err) {
           throw err;
         }
         console.log(`Your README is saved `);
       });
-
-
-    const queryUrl = `https://api.github.com/users/${data.username}/repos?per_page=100`;
-   
-    // //currently taking in the resp data and writing it to the README.md file using the query url to get the users repo
-    axios.get(queryUrl).then(function(res) {
-            
-        
-        
-            // repoStr
-
     });
-  });
 
+   }catch (err) {
+       console.log(err);
+   }
+}
 
-
-// console.log(writeToFile());
-// function init() {
-
-
-// init();
